@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ValidationException;
 import java.nio.file.AccessDeniedException;
@@ -31,7 +31,14 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = {ValidationException.class})
     public ResponseEntity<String> handleValidationException(ValidationException e) {
         log.warn("Global error handler received ValidationException", e);
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_NO_MONEY_EXCEPTION);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_STATUS_VALIDATION_ERROR_OCCURRED);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public ResponseEntity<String> handleMethodArgumentValidException(MethodArgumentNotValidException e) {
+        log.warn("Global error handler received MethodArgumentNotValidException", e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_STATUS_VALIDATION_ERROR_OCCURRED);
     }
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {NoSuchElementException.class})
@@ -48,16 +55,16 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {UsernameNotFoundException.class})
-    public ResponseEntity<String>  handleValidationException(UsernameNotFoundException e) {
+    public ResponseEntity<String>  handleUsernameNotFoundException(UsernameNotFoundException e) {
         log.warn("Global error handler received UsernameNotFoundException", e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CONST_STATUS_NO_USER);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {NullPointerException.class})
-    public ResponseEntity<String>  handleValidationException(RuntimeException e) {
+    public ResponseEntity<String>  handleNullPointerException(RuntimeException e) {
         log.warn("Global error handler received NullPointerException", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CONST_STATUS_VALIDATION_ERROR_OCCURRED);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CONST_STATUS_INTERNAL_ERROR_OCCURRED);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -71,6 +78,6 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = {NoMoneyException.class})
     public ResponseEntity<String>  handleNoMoneyException(RuntimeException e) {
         log.warn("Global error handler received NoRowException", e);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CONST_STATUS_INTERNAL_ERROR_OCCURRED);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CONST_NO_MONEY_EXCEPTION);
     }
 }
