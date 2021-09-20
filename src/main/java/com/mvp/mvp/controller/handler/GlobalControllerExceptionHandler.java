@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ValidationException;
 import java.nio.file.AccessDeniedException;
@@ -31,53 +32,53 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = {ValidationException.class})
     public ResponseEntity<String> handleValidationException(ValidationException e) {
         log.warn("Global error handler received ValidationException", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_STATUS_VALIDATION_ERROR_OCCURRED);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,CONST_STATUS_VALIDATION_ERROR_OCCURRED);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<String> handleMethodArgumentValidException(MethodArgumentNotValidException e) {
         log.warn("Global error handler received MethodArgumentNotValidException", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_STATUS_VALIDATION_ERROR_OCCURRED);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,CONST_STATUS_VALIDATION_ERROR_OCCURRED);
     }
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {NoSuchElementException.class})
     public ResponseEntity<String>  handleNoSuchElementException(NoSuchElementException e) {
         log.warn("Global error handler received NoSuchElementException", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CONST_NO_SUCH_ELEMENT_EXCEPTION);
+          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,CONST_NO_SUCH_ELEMENT_EXCEPTION);
     }
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {AccessDeniedException.class})
     public ResponseEntity<String>  handleValidationException(AccessDeniedException e) {
         log.warn("Global error handler received AccessDeniedException", e);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CONST_STATUS_NOT_AUTHORIZED);
+          throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,CONST_STATUS_NOT_AUTHORIZED);
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {UsernameNotFoundException.class})
     public ResponseEntity<String>  handleUsernameNotFoundException(UsernameNotFoundException e) {
         log.warn("Global error handler received UsernameNotFoundException", e);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CONST_STATUS_NO_USER);
+          throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,CONST_STATUS_NO_USER);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {NullPointerException.class})
     public ResponseEntity<String>  handleNullPointerException(RuntimeException e) {
         log.warn("Global error handler received NullPointerException", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CONST_STATUS_INTERNAL_ERROR_OCCURRED);
+          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,CONST_STATUS_INTERNAL_ERROR_OCCURRED);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {NoRowException.class})
     public ResponseEntity<String>  handleNoRowException(RuntimeException e) {
         log.warn("Global error handler received NoRowException", e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CONST_NO_SUCH_ROW_EXCEPTION);
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST,CONST_NO_SUCH_ROW_EXCEPTION);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ExceptionHandler(value = {NoMoneyException.class})
     public ResponseEntity<String>  handleNoMoneyException(RuntimeException e) {
         log.warn("Global error handler received NoRowException", e);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CONST_NO_MONEY_EXCEPTION);
+          throw new ResponseStatusException(HttpStatus.NO_CONTENT,CONST_NO_MONEY_EXCEPTION);
     }
 }
