@@ -34,6 +34,7 @@ public class ProductController {
         this.productResolverService = productResolverService;
     }
 
+    @PreAuthorize(value = "@RuleHandler.checkRule('ROLE_SELLER')")
     @PostMapping("/save")
     public ResponseEntity<HttpStatus> createProduct(@Valid @RequestBody ProductRequest productRequest) {
         logger.info("/save" + productRequest.toString());
@@ -41,6 +42,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).header("foundOn", url+"/product/get/" +id).build();
     }
 
+    @PreAuthorize(value = "@RuleHandler.checkRule('ROLE_SELLER')")
     @PutMapping("/update")
     public ResponseEntity<ProductResponse> updateProduct(@Valid @RequestBody UpdateRequest request) {
         logger.info("/update" + request.toString());
@@ -61,6 +63,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.buyProducts(buyRequest));
     }
 
+    @PreAuthorize(value = "@RuleHandler.checkRule('ROLE_SELLER')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable Long id) {
         logger.info("/delete/{id}" + id);

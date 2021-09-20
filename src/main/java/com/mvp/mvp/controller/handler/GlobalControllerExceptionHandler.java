@@ -75,10 +75,10 @@ public class GlobalControllerExceptionHandler {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST,CONST_NO_SUCH_ROW_EXCEPTION);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {NoMoneyException.class})
     public ResponseEntity<String>  handleNoMoneyException(RuntimeException e) {
         log.warn("Global error handler received NoRowException", e);
-          throw new ResponseStatusException(HttpStatus.NO_CONTENT,CONST_NO_MONEY_EXCEPTION);
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST,CONST_NO_MONEY_EXCEPTION);
     }
 }

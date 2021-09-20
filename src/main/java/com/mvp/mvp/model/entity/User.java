@@ -99,7 +99,7 @@ public class User {
     public static final class UserBuilder {
         private String username;
         private char[] password;
-        private Long deposit;
+        private Long deposit = 0L;
         private List<Role> roles;
 
         private UserBuilder() {
