@@ -6,6 +6,7 @@ import com.mvp.mvp.model.entity.Role;
 import com.mvp.mvp.model.entity.User;
 import com.mvp.mvp.model.request.BuyRequest;
 import com.mvp.mvp.model.request.ProductRequest;
+import com.mvp.mvp.model.request.UpdateRequest;
 import com.mvp.mvp.repository.ProductRepository;
 import com.mvp.mvp.repository.RoleRepository;
 import com.mvp.mvp.repository.UserRepository;
@@ -101,12 +102,14 @@ public class ProductControllerTest {
 
     @Test
     public void buyProduct() throws Exception {
+        //given
         setup();
         insertUser();
         String token = this.jwtProvider.createToken(USERNAME);
         BuyRequest buyRequest = BuyRequest.BuyRequestBuilder.aBuyRequest().withProductName(PRODUCT_NAME).withAmount(2L).build();
         String object = objectMapper.writeValueAsString(buyRequest);
 
+        //when then
         this.mockMvc
                 .perform(MockMvcRequestBuilders.post("/product/buy").content(object)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,6 +121,7 @@ public class ProductControllerTest {
 
     @Test
     public void buyProductNoRole() throws Exception {
+        //given
         setup();
         insertUser();
         User user = User.UserBuilder.anUser().withPassword("f".toCharArray()).withUsername("f").withDeposit(500L).build();
@@ -125,6 +129,7 @@ public class ProductControllerTest {
         BuyRequest buyRequest = BuyRequest.BuyRequestBuilder.aBuyRequest().withProductName(PRODUCT_NAME).withAmount(2L).build();
         String object = objectMapper.writeValueAsString(buyRequest);
 
+        //when then
         this.mockMvc
                 .perform(MockMvcRequestBuilders.post("/product/buy").content(object)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -135,6 +140,7 @@ public class ProductControllerTest {
 
     @Test
     public void buyProductValidation() throws Exception {
+        //given
         setup();
         insertUser();
         User user = User.UserBuilder.anUser().withPassword("f".toCharArray()).withUsername("f").withDeposit(500L).build();
@@ -142,6 +148,7 @@ public class ProductControllerTest {
         BuyRequest buyRequest = BuyRequest.BuyRequestBuilder.aBuyRequest().withProductName(PRODUCT_NAME).withAmount(-2L).build();
         String object = objectMapper.writeValueAsString(buyRequest);
 
+        //when then
         this.mockMvc
                 .perform(MockMvcRequestBuilders.post("/product/buy").content(object)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -151,13 +158,53 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void updateProductTestCustomValidation() throws Exception {
+    public void updateProduct() throws Exception {
+        //given
         setup();
         User user = insertUser();
         String token = this.jwtProvider.createToken(USERNAME);
-        ProductRequest productRequest = ProductRequest.ProductRequestBuilder.aProductRequest().withProductName("new").withCost(3L).withAmountAvailable(4L).build();
+        UpdateRequest productRequest = UpdateRequest.updateRequestBuilder.aupdateRequest().withProductId(user.getProducts().get(0).getProductId()).withProductName("new").withCost(5L).withAmountAvailable(4L).build();
         String object = objectMapper.writeValueAsString(productRequest);
 
+        //when then
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.put("/product/update").content(object)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(jwtProperties.getHeaderName(),
+                                jwtProperties.getStartsWith() + token))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void updateProductNotOwner() throws Exception {
+        //given
+        setup();
+        User user = insertUser();
+        User user2 = User.UserBuilder.anUser().withPassword("f".toCharArray()).withUsername("F").withDeposit(500L).build();
+        userRepository.save(user2);
+        String token = this.jwtProvider.createToken("f");
+        UpdateRequest productRequest = UpdateRequest.updateRequestBuilder.aupdateRequest().withProductId(user.getProducts().get(0).getProductId()).withProductName("new").withCost(5L).withAmountAvailable(4L).build();
+        String object = objectMapper.writeValueAsString(productRequest);
+
+        //when then
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.put("/product/update").content(object)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(jwtProperties.getHeaderName(),
+                                jwtProperties.getStartsWith() + token))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void updateProductTestCustomValidation() throws Exception {
+        //given
+        setup();
+        User user = insertUser();
+        String token = this.jwtProvider.createToken(USERNAME);
+        UpdateRequest productRequest = UpdateRequest.updateRequestBuilder.aupdateRequest().withProductId(user.getProducts().get(0).getProductId()).withProductName("new").withCost(3L).withAmountAvailable(4L).build();
+        String object = objectMapper.writeValueAsString(productRequest);
+
+        //when then
         this.mockMvc
                 .perform(MockMvcRequestBuilders.put("/product/update").content(object)
                         .contentType(MediaType.APPLICATION_JSON)

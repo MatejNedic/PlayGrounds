@@ -43,16 +43,6 @@ public class UpdateRequest {
         this.amountAvailable = amountAvailable;
     }
 
-    public Product createUpdateRequest(User user) {
-        Product product = new Product();
-        product.setProductName(productName);
-        product.setCost(cost);
-        product.setAmountAvailable(amountAvailable);
-        product.setUser(user);
-        user.getProducts().add(product);
-        return product;
-    }
-
     public Long getProductId() {
         return productId;
     }

@@ -31,6 +31,8 @@ import java.util.*;
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
+    private ProductUtil productUtil;
+    @Autowired
     private TransactionHandler transactionHandler;
     @Autowired
     private ProductRepository productRepository;
@@ -65,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @PreAuthorize("@OwnerHandler.checkIfUserOwns(#product)")
     public ProductResponse updateProduct(Product product, UpdateRequest productRequest) {
-        ProductUtil.updateProduct(productRequest, product);
+        productUtil.updateProduct(productRequest, product);
         product = productRepository.save(product);
         return ProductResponse.createProductResponse(product);
     }
